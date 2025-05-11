@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Water Pollution</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #d0e9ff, #f2f9ff);
+      margin: 0;
+      padding: 0;
+    }
+
+    .wrapper {
+      border: 3px solid #007acc;
+      border-radius: 12px;
+      margin: 40px auto;
+      padding: 30px;
+      max-width: 700px;
+      background-color: #ffffff;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #005c99;
+      margin-bottom: 15px;
+    }
+
+    .header-image {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .header-image img {
+      width: 100%;
+      max-width: 500px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #003d66;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #007acc;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0,122,204,0.3);
+    }
+
+    button {
+      background-color: #007acc;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #005f99;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    #imagePreview {
+      margin-top: 10px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <h1>Water Pollution Complaint Registration</h1>
+
+    <div class="header-image">
+      <img src="C:\Users\yashg\OneDrive\Documents\Custom Office Templates\Desktop\profile.jpg.webp" alt="Polluted River">
+    </div>
+
+    <!-- Form -->
+    <form id="complaintForm">
+      <label for="name">Your Name*</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="river">River Name*</label>
+      <input type="text" id="river" name="river" required>
+
+      <label for="location">Location*</label>
+      <input type="text" id="location" name="location" required>
+
+      <label for="pollutionType">Pollution Type*</label>
+      <select id="pollutionType" name="pollutionType" required>
+        <option value="chemical">Chemical Waste</option>
+        <option value="plastic">Plastic Pollution</option>
+        <option value="sewage">Sewage</option>
+        <option value="oil">Oil Spill</option>
+      </select>
+
+      <label for="description">Description*</label>
+      <textarea id="description" name="description" rows="4" required></textarea>
+
+      <!-- Image Upload -->
+      <label for="image">Upload Pollution Image (optional)</label>
+      <input type="file" id="image" name="image" accept="image/*">
+      <img id="imagePreview" alt="Image Preview" />
+
+      <button type="submit">Submit Complaint</button>
+    </form>
+  </div>
+
+  <script>
+    // Show image preview
+    document.getElementById('image').addEventListener('change', function (e) {
+      const preview = document.getElementById('imagePreview');
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Form submit handler
+    document.getElementById('complaintForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const river = document.getElementById('river').value;
+      const location = document.getElementById('location').value;
+      const pollutionType = document.getElementById('pollutionType').value;
+      const description = document.getElementById('description').value;
+
+      // Exclude the image field from the CSV
+      const complaintData = [
+        {
+          name,
+          river,
+          location,
+          pollutionType,
+          description
+        }
+      ];
+
+      const csv = convertToCSV(complaintData);
+      downloadCSV(csv);
+      alert('Your complaint has been recorded and downloaded!');
+    });
+
+    function convertToCSV(data) {
+      const header = ['Name', 'River', 'Location', 'Pollution Type', 'Description'];
+      const rows = data.map(item => [
+        item.name,
+        item.river,
+        item.location,
+        item.pollutionType,
+        item.description
+      ]);
+      return [header, ...rows].map(row => row.join(',')).join('\n');
+    }
+
+    function downloadCSV(csv) {
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'complaints.csv';
+      link.click();
+    }
+  </script>
+</body>
+</html>
